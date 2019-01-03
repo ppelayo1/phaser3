@@ -1,0 +1,58 @@
+First problem is you are not pathing toward your assets correctly.
+
+The pathing is done where the script is located.
+So since your script is in your HTML file you need to just do 
+
+// load the resources here
+                this.load.image('tiles', 'assets/level3.png')
+                this.load.tilemapTiledJSON('map', 'assets/level3.json');
+                this.load.spritesheet('player', 'assets/sp1.png', {
+                    frameWidth: 64,
+                    frameHeight: 64
+                });
+				
+This will get your player to at least appear.
+
+The second problem is your not actually loading a tileset. It is simply a image of a gameMap.
+
+This second problem I am going to go over throughly so that you understand how to resolve this issue.
+
+
+
+	I took your level3.png and converted some of the squares into tiles, for the Tiled program. I did this with GIMP which is a image editor like photoshop but it is free.
+	Named the file level3properTileSet.png.
+	The tiles are 22 x 25.
+	
+	Next I started a new map in the Tiled program which I called level03fixed.json.
+	Your level3.png is 640x640. So 640/22 = 29.09 tiles, so round up to 30 tiles for the width.
+	640/25 = 25.6 so round up to 26 tiles in height;
+	
+	help01.png
+	
+	After creating the map, go to new tileset in the bottom right of tiled, browse and select the level3properTileSet.png.
+	Name it ts1 so that is would be the same as what is set in your phaser program under.
+	const tiles = map.addTilesetImage('ts1', 'tiles', 64, 64);
+	
+	Make sure the the tile width is 22px, and tile height is set to 25px.
+	
+	Help02.png
+	
+	You can now create the map anyway you want, I did a little bit trying to replicate your level03.png to demonstrate an example.
+	Make sure to create your layers World,Lower in Tiled and put stuff in it.
+	Help03.png
+	
+	
+	Lastly I change the paths to point toward the new files I created. I also changed these statements.
+	
+	// create your world here
+                //const map = this.make.tilemap('map');
+                const map = this.make.tilemap({ key: "map"});
+                const tiles = map.addTilesetImage('ts1', 'tiles');
+                var World = map.createStaticLayer('World', tiles);
+                var BelowPlayer = map.createStaticLayer('Below', tiles);
+				
+				Don't need to put anynumbers in the addtilesetImage as the JSON will provide it, but if you did it would need to be 22,25 as that is what the tile dimensions are.
+				
+				Not for createStaticLayer the numbers will simply determine where on the canvas the layer will be moved to. So 64,64 would move it 64 to the right and 64 down. Can just leave it blank so it defaults 0.
+				
+				I am gonna throw everything up on github for you to look at too. But the map is now working and the character can move, just he doesn't have any animation doing so.
